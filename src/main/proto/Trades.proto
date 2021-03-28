@@ -1,0 +1,149 @@
+syntax = "proto3";
+package com.bcs.bm.quikexport;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "date.proto";
+import "SystemBlock.proto";
+
+option csharp_namespace = "Com.Bcs.Bm.QuikExport.Proto";
+option java_package = "com.bcs.bm.tradesstore.api.grpc";
+option java_multiple_files = true;
+
+
+message TradeBody {
+    uint64 tradeNum = 1;
+    string operation = 2; // See also operationInt (46) below
+    string classCode = 3;
+    google.type.Date tradeDate = 4;
+    string secCode = 5;
+    int32 uid = 6;
+    string kind = 7;
+    double accruedint = 8;
+    double accruedint2 = 9;
+    double lowerDiscount = 10;
+    uint64 orderNum = 11;
+    double price = 12;
+    double price2 = 13;
+    double repoRate = 14;
+    double repoValue = 15;
+    double repo2Value = 16;
+    double startDiscount = 17;
+    double tsCommission = 18;
+    double upperDiscount = 19;
+    double value = 20;
+    double yield = 21;
+    double qty = 22;
+    double qtyPcs = 23;
+    google.protobuf.Timestamp tradeDateTime = 24;
+    int32 tradeTimeMs = 25;
+    string blockSecurities = 26;
+    int32 repoTerm = 27;
+    double clearingComission = 28;
+    double exchangeComission = 29;
+    double techCenterComission = 30;
+    string account = 31;
+    string brokerRef = 32;
+    string clientCode = 33;
+    string settleCode = 34;
+    string userId = 35;
+    string exchangeCode = 36;
+    string type = 37;
+    string firmId = 38;
+    string firmName = 39;
+    string cpFirmId = 40;
+    string cpFirmName = 41;
+    string settleCurrency = 42;
+    string tradeCurrency = 43;
+    string stationId = 44;
+    double portfolioValue = 45;
+    int32 operationInt = 46; // Computed downstream. 1=BUY 2=SELL
+
+    double initMargin = 50;
+    double minMargin = 51;
+    double correctedMargin = 52;
+    double margin = 53;
+    double leverage = 54;
+    double openLimit = 55;
+    double valShort = 56;
+    double valLong = 57;
+    double valLongMargin = 58;
+    double valLongAsset = 59;
+    double limAll = 60;
+    double avLimAll = 61;
+    double lockedBuy = 62;
+    double lockedBuyMargin = 63;
+    double lockedBuyAsset = 64;
+    double lockedSell = 65;
+    double lockedValueCoef = 66;
+    double limBuy = 67;
+    double limSell = 68;
+    double limNonMargin = 69;
+    double limBuyAsset = 70;
+    double openPos = 71;
+    double inAllAssets = 72;
+    double allAssets = 73;
+    double profitLoss = 74;
+    double rateChange = 75;
+    double curentBal = 76;  // sic!
+    double moneyLocked = 77;
+    double curLeverage = 78;
+
+    google.type.Date settleDate = 85;
+    string period = 86;  // String, because that's what is called from the Exporter, in spite of the fact that the doc says it should be int.
+    int32 sell = 87;
+    int32 rFlags = 88;
+    string bankAccId = 89;
+    uint64 linkedTrade = 90;
+    int32 canceledUserId = 91;
+    google.protobuf.Timestamp canceledDateTime = 92;
+    int32 canceledDateTimeMs = 93;
+    int32 transId = 94;
+    string clearingFirmId = 95;
+    string clearingBankAccId = 96;
+    string lSecCode = 97;
+    string systemRef = 98;
+    double brokerComission = 99;  // sic :(
+    string orderExchangeCode = 100;
+    string execMarket = 101;
+    int32 liquidityIndicator = 102;
+    string extRef = 103;
+    int32 extTradeFlags = 104;
+    int32 onBehalfOfUid = 105;
+    int32 clientQualifier = 106;
+    uint64 clientShortCode = 107;
+    int32 investmentDecisionMakerQualifier = 108;
+    uint64 investmentDecisionMakerShortCode = 109;
+    int32 executingTraderQualifier = 110;
+    uint64 executingTraderShortCode = 111;
+    int32 waiverFlag = 112;
+    string mlegBaseClassCode = 113;
+    string mlegBaseSecCode = 114;
+    google.protobuf.Int32Value sideQualifier = 115;
+    string otcPostTradeIndicator = 116;
+    google.protobuf.Int32Value capacity = 117;
+    double crossRate = 118;
+    string cpUserId = 119;
+
+    double npr1 = 120;  // НПР1
+    double npr2 = 121;  // НПР2
+}
+
+message Trade {
+    SystemBlock systemBlock = 1;
+    TradeBody body = 2;
+}
+
+
+message PositionTrade {
+    google.protobuf.Timestamp dateTime = 1;
+    string clientCode = 2;
+    string secCode = 3;
+    string account = 4;
+    string firmId = 5;
+    double value = 6;
+    double qtyPcs = 7;
+    int64 tradeNum = 8;
+    int32 operation = 9; // 1 = BUY   2 = SELL
+    string classCode = 10;
+}

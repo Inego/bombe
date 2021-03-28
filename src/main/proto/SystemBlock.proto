@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+package com.bcs.bm.quikexport;
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Com.Bcs.Bm.QuikExport.Proto";
+option java_package = "com.bcs.bm.quikexport.grpc";
+option java_multiple_files = true;
+
+message SystemBlock {
+
+    enum Event {
+        UPDATED = 0;
+        DELETED = 1;
+        NEW = 2;
+    }
+
+    string originator = 1;
+    google.protobuf.Timestamp eventTime = 2;
+    string documentId = 3;
+    string meanFor = 4;
+    Event event = 5;
+}

@@ -1,0 +1,247 @@
+syntax = "proto3";
+package com.bcs.bm.quikexport;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "date.proto";
+import "TimeOfDay.proto";
+import "SystemBlock.proto";
+
+option csharp_namespace = "Com.Bcs.Bm.QuikExport.Proto";
+option java_package = "com.bcs.bm.ordersstore.service.grpc";
+option java_multiple_files = true;
+
+
+message OrderBody {
+    uint64 orderNum = 1;
+    string classCode = 2;
+    google.type.Date tradeDate = 3;
+    string secCode = 4;
+    double accruedint = 5;
+    double price = 6;
+    double value = 7;
+    double yield = 8;
+    double price2 = 9;
+    double balance = 99;
+    double balancePcs = 10;
+    google.protobuf.Timestamp orderDateTime = 11;
+    int32 orderTimeMs = 12;
+    double qty = 13;
+    double qtyPcs = 14;
+    int32 uid = 15;
+    google.protobuf.Timestamp withdrawDateTime = 16;
+    int32 withdrawTimeMs = 17;
+    string account = 18;
+    string brokerRef = 19;
+    string clientCode = 20;
+    string userId = 21;
+    string settleCode = 22;
+    string operation = 23;
+    string state = 24;
+    string type = 25;
+    string firmId = 26;
+    string firmName = 27;
+    string exchangeCode = 28;
+    google.type.TimeOfDay activationTime = 29;
+    uint64 linkedOrder = 30;
+
+    oneof expiry {
+        google.type.Date expiryDate = 31;
+        int32 expiryInt = 98;
+    }
+
+    string isMarketMaker = 32;
+    int32 transId = 33;
+    double visible = 34;
+
+    // period -- see 97 below
+
+    int32 flags = 35;
+    string bankAccId = 36;
+    string valueEntryType = 37;
+    int32 repoTerm = 38;
+    double repoValue = 39;
+    double repo2Value = 40;
+    double repoValueBalance = 41;
+    double startDiscount = 42;
+    string rejectReason = 43;
+    int32 extOrderFlags = 44;
+    google.protobuf.DoubleValue minQty = 45;
+    string execType = 46;
+    google.protobuf.Int32Value sideQualifier = 47;
+    google.protobuf.Int32Value acntType = 48;
+    google.protobuf.Int32Value capacity = 49;
+    google.protobuf.Int32Value passiveOnlyOrder = 50;
+    double portfolioValue = 51;
+    double initMargin = 52;
+    double minMargin = 53;
+    double correctedMargin = 54;
+    double margin = 55;
+    double leverage = 56;
+    double openLimit = 57;
+    double valShort = 58;
+    double valLong = 59;
+    double valLongMargin = 60;
+    double valLongAsset = 61;
+    double limAll = 62;
+    double avLimAll = 63;
+    double lockedBuy = 64;
+    double lockedBuyMargin = 65;
+    double lockedBuyAsset = 66;
+    double lockedSell = 67;
+    double lockedValueCoef = 68;
+    double limBuy = 69;
+    double limNonMargin = 70;
+    double limBuyAsset = 71;
+    double openPos = 72;
+    double inAllAssets = 73;
+    double allAssets = 74;
+    double profitLoss = 75;
+    double rateChange = 76;
+    double curentBal = 77;  // sic!
+    double moneyLocked = 78;
+    double curLeverage = 79;
+    uint64 stopOrder = 80;
+    double awgPrice = 81; // sic!
+    int32 canceledUserId = 82;
+    google.type.TimeOfDay expiryTime = 83;
+    string priceCurrency = 84;
+    string settleCurrency = 85;
+    int32 acceptedUid = 86;
+    int32 extOrderStatus = 87;
+    double filledValue = 88;
+    string extRef = 89;
+    int32 onBehalfOfUid = 90;
+    int32 clientQualifier = 91;
+    uint64 clientShortCode = 92;
+    int32 investmentDecisionMakerQualifier = 93;
+    uint64 investmentDecisionMakerShortCode = 94;
+    int32 executingTraderQualifier = 95;
+    uint64 executingTraderShortCode = 96;
+
+    string period = 97;  // String, because that's what is called from the Exporter, in spite of the fact that the doc says it should be int.
+
+    // 98 occupied by expiry.expiryInt
+    // 99 occupied by balance
+
+    int32 secScale = 100;
+
+    double bmAvgPrice = 110;
+    double bmExecutedValue = 111;
+}
+
+message Order {
+    SystemBlock systemBlock = 1;
+    OrderBody body = 2;
+}
+
+message StopOrderBody {
+    uint64 stopOrderNum = 1;  // Номер стоп-заявки на сервере QUIK
+    google.type.Date tradeDate = 2;  // Дата торговой сессии
+    string secCode = 3;  // Код инструмента
+    string clientCode = 4;  // Код клиента
+    string classCode = 5;  // Код класса
+    double conditionPrice = 6;  // Стоп-цена
+    uint64 linkedOrder = 7;  // Номер заявки
+    double price = 8;  // Цена
+    uint64 allTradeNum = 9;  // Сделка условия
+    uint64 coOrderNum = 10;  // Связанная заявка
+    uint64 baseOrderNum = 11;  // Заявка условия
+    double coOrderPrice = 12;  // Цена связанной заявки
+    double offset = 13;  // Отступ от min/max (только для Take-Profit)
+    double spread = 14;  // Защитный спрэд (только для Take-Profit)
+    double qty = 15;  // Количество бумаг, в лотах
+    double qtyPcs = 16;  // Количество бумаг, в штуках
+    double balance = 17;  // Неисполненный остаток заявки, в лотах
+    double balancePcs = 18;  // Неисполненный остаток заявки, в штуках
+
+    string condition = 19;  // Условие стоп-заявки
+    // при экспорте в поле таблицы числового типа, параметр может принимать одно из значений:
+    // «4» – меньше либо равно;
+    // «5» – больше либо равно
+
+    oneof expiry {  // Срок истечения стоп-заявки
+        google.type.Date expiryDate = 20;
+        int32 expiryInt = 21;
+    }
+    // при экспорте в поле таблицы числового типа (int) параметр может принимать одно из значений:
+    // «0» – до отмены;
+    // «-1» – сегодня;
+    // иначе дата
+
+    double filledQty = 22;  // Исполненное количество ценных бумаг, в лотах
+    int32 uid = 23;  // UID пользователя QUIK, который выставил стоп-заявку
+    string account = 24;  // Торговый счет
+    string brokerRef = 25;  // Комментарий, обычно: <код клиента>/<номер поручения>
+    string firmId = 26;  // Код участника торгов
+    string firmName = 27;  // Наименование участника торгов
+    string state = 28;  // Состояние
+    string stateDesc = 29;  // Результат
+    string orderKind = 30;  // Тип стоп-заявки
+    string type = 31;  // Тип заявки
+    string mode = 32;  // Тип заявки, код из нескольких символов
+    string operation = 33;  // Операция
+    string conditionSecCode = 34;  // Код бумаги стоп-цены
+    string conditionSecName = 35;  // Бумага стоп-цены
+    string conditionClassCode = 36;  // Код класса стоп-цены
+    string conditionClassName = 37;  // Класс стоп-цены
+    int32 transId = 38;  // ID транзакции
+    string offsetUnits = 39;  // Единицы измерения отступа
+    string spreadUnits = 40;  // Единицы измерения спрэда
+    string ownerServer = 41;  // Сервер
+    google.type.TimeOfDay activeFromTime = 42;  // Время внутри торгового дня, начиная с которого проверяются условия выполнения стоп-заявки
+    google.type.TimeOfDay activeToTime = 43;  // Время внутри торгового дня, до которого включительно проверяются условия выполнения стоп-заявки
+    google.type.TimeOfDay withdrawTime = 44;  // Время снятия стоп-заявки
+    double conditionPrice2 = 45;  // Цена условия для выставления лимитированной заявки. Используется только для заявок типов «тейк-профит и стоп-лимит» и «тейк-профит и стоп-лимит по исполнению»
+    string activeFromToTime = 46;  // Если «Да», то заданы значения ActiveFromTime и ActiveToTime
+    string marketStopLimit = 47;  // Заявка, выставляемая по «стоп-лимиту» – рыночная
+    string marketTakeProfit = 48;  // Заявка, выставляемая по «тейк-профиту» – рыночная
+
+    int32 flags = 49;  // Набор битовых флагов
+    // при экспорте в поле таблицы числового типа, параметр может принимать любую комбинацию из следующих значений (если представлено одновременно несколько признаков, то в поле содержится их сумма):
+    // «1» – если флаг установлен, то заявка активна, иначе снята или исполнена;
+    // «2» – если флаг установлен, то заявка снята, иначе исполнена. Имеет смысл, если флаг «1» снят;
+    // «4» –если флаг установлен, то направление заявки «на продажу», иначе «на покупку».
+
+    string stopOrderType = 50;  // Тип стоп-заявки
+    // при экспорте в поле таблицы числового типа параметр может принимать одно из значений:
+    // «1» – стандартная стоп-заявка;
+    // «2» – стоп-заявка с ценой условия по другому инструменту;
+    // «3» – стоп-заявка со связанной лимитированной заявкой;
+    // «6» – «Тейк-профит» стоп-заявка;
+    // «7» – стоп-заявка, активирующаяся по исполнению лимитированной заявки;
+    // «8» – «Тейк-профит» стоп-заявка, активирующаяся по исполнению лимитированной заявки;
+    // «9» – «Тейк-профит и стоп-лимит»;
+    // «10» – стоп-заявка типа «Тейк-профит и стоп-лимит», активирующаяся по исполнению лимитированной заявки.
+
+    google.protobuf.Timestamp stopOrderDateTime = 51;  // Дата и время регистрации стоп-заявки на сервере QUIK
+    google.type.Date withdrawDate = 52;  // Дата снятия стоп-заявки
+    google.protobuf.Timestamp withdrawDateTime = 53;  // Дата и время снятия стоп-заявки
+    int32 canceledUserId = 54;  // Идентификатор пользователя, снявшего заявку
+    google.protobuf.Timestamp activationDateTime = 55;  // Дата и время снятия стоп-заявки
+    int32 withdrawTimeMs = 56;  // Микросекунды для времени активации стоп-заявки
+
+}
+
+message StopOrder {
+    SystemBlock systemBlock = 1;
+    StopOrderBody body = 2;
+}
+
+message AllOrdersRecord {
+    oneof record {
+        Order order = 1;
+        StopOrder stopOrder = 2;
+    }
+}
+
+message AllOrdersResult {
+    int64 totalRecords = 1;
+    int32 totalPages = 2;
+   repeated AllOrdersRecord records = 3;
+}
+
+
+
+
+
