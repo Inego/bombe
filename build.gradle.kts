@@ -36,6 +36,8 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.6")
     implementation("org.slf4j:slf4j-simple:1.7.29")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.+")
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.15.2")
+    implementation("org.apache.poi:poi-ooxml:5.0.0")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVer")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVer")

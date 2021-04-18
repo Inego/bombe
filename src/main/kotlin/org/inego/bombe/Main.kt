@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,7 +27,7 @@ import javax.swing.SwingUtilities
 
 fun main() {
 
-    var decoder by mutableStateOf<Decoder>(OrderDecoder)
+    var decoder by mutableStateOf<Decoder>(TradeDecoder)
     val decoded = mutableStateOf("")
     val input = mutableStateOf(TextFieldValue())
 
@@ -50,6 +51,7 @@ fun main() {
         decoded.value = "[$result]"
     }
 
+
     SwingUtilities.invokeLater {
 
         val appWindow = AppWindow(title = "Bombe")
@@ -58,15 +60,19 @@ fun main() {
 
             Column {
 
-                MyToggleButton(
-                    listOf(OrderDecoder, StopOrderDecoder, TradeDecoder),
-                    decoder,
-                    { decoder = it },
-                ) { element, isCurrent ->
-                    Text(
-                        element.tableName,
-                        color = if (isCurrent) Color.Unspecified else Color.LightGray
-                    )
+                Box(Modifier.fillMaxWidth()) {
+                    MyToggleButton(
+                        listOf(OrderDecoder, StopOrderDecoder, TradeDecoder),
+                        decoder,
+                        { decoder = it },
+                    ) { element, isCurrent ->
+                        Text(
+                            element.tableName,
+                            color = if (isCurrent) Color.Unspecified else Color.LightGray
+                        )
+                    }
+
+                    ContextButtons(decoder, Modifier.align(Alignment.CenterEnd))
                 }
 
                 val clipboardManager = LocalClipboardManager.current
@@ -156,5 +162,13 @@ fun main() {
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun ContextButtons(decoder: Decoder, modifier: Modifier = Modifier) {
+    if (decoder == TradeDecoder) {
+        TradeContextButtons(modifier)
     }
 }

@@ -2,7 +2,6 @@ package org.inego.bombe
 
 import com.bcs.bm.ordersstore.service.grpc.Order
 import com.bcs.bm.ordersstore.service.grpc.StopOrder
-import com.bcs.bm.tradesstore.api.grpc.Trade
 import com.google.protobuf.GeneratedMessageV3
 import com.google.protobuf.util.JsonFormat
 import java.time.LocalDate
@@ -47,10 +46,4 @@ object OrderDecoder : BaseDecoder() {
 object StopOrderDecoder : BaseDecoder() {
     override val tableName: String = "stop_orders"
     override fun parseFrom(bytes: ByteArray): StopOrder = StopOrder.parseFrom(bytes)
-}
-
-
-object TradeDecoder : BaseDecoder() {
-    override val tableName: String = "trades"
-    override fun parseFrom(bytes: ByteArray): Trade = Trade.parseFrom(bytes)
 }
