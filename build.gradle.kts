@@ -59,6 +59,7 @@ tasks.withType<KotlinCompile> {
 compose.desktop {
     application {
         mainClass = "org.inego.bombe.MainKt"
+        jvmArgs("-Xmx8g")
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "bombe"

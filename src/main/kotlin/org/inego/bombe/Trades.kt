@@ -16,6 +16,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.window.Notifier
 import com.bcs.bm.tradesstore.api.grpc.Trade
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.nio.file.Path
@@ -75,11 +77,12 @@ fun TradeContextButtons(modifier: Modifier = Modifier) {
             }
 
             val convertEnabled = remember { mutableStateOf(true) }
+            val addStr = remember { mutableStateOf("") }
 
             TextButton({
-                convertCsvToExcel(convertEnabled)
+                convertCsvToExcel(convertEnabled, addStr)
             }, enabled = convertEnabled.value) {
-                Text("CSV → xlsx")
+                Text("CSV → xlsx ${addStr.value}")
             }
         }
     }
@@ -97,7 +100,7 @@ private val chooser = JFileChooser().apply {
 val focusedWindow = AppManager.focusedWindow?.window
 
 
-private fun convertCsvToExcel(convertEnabled: MutableState<Boolean>) {
+private fun convertCsvToExcel(convertEnabled: MutableState<Boolean>, addStr: MutableState<String>) {
 
     convertEnabled.value = false
 
@@ -106,19 +109,21 @@ private fun convertCsvToExcel(convertEnabled: MutableState<Boolean>) {
 
         if (saveIntResult == JFileChooser.APPROVE_OPTION) {
             val path = chooser.selectedFile.toPath()
-            convertForStats(path)
+
+            GlobalScope.launch {
+                convertForStats(path, addStr)
+                convertEnabled.value = true
+            }
         }
     }
     catch (e: Exception) {
         JOptionPane.showMessageDialog(null, e.localizedMessage, "Error", JOptionPane.ERROR_MESSAGE)
-    }
-    finally {
         convertEnabled.value = true
     }
 }
 
 
-private fun convertForStats(inputCsv: Path) {
+private fun convertForStats(inputCsv: Path, addStr: MutableState<String>) {
 
     val workbook = XSSFWorkbook()
     val sheet = workbook.createSheet("trades")
@@ -130,17 +135,40 @@ private fun convertForStats(inputCsv: Path) {
 
     val decoder = Base64.getMimeDecoder()
 
+    fun autosize() {
+        for (i in 0..8) {
+            addStr.value = "autosizing $i..."
+            sheet.autoSizeColumn(i)
+        }
+    }
+
+    var counter = 0
+
     csvReader().open(inputCsv.toFile()) {
 
         readAllWithHeaderAsSequence().forEachIndexed { idx, map ->
+
+            counter = idx
+
+            if (idx % 1_000 == 0) {
+                if (idx == 1_000) {
+                    autosize()
+                } else {
+                    addStr.value = "${(idx / 1000)}k"
+                }
+            }
 
             val base64String = map["encode"]
             val bytes = decoder.decode(base64String)
 
             val trade = Trade.parseFrom(bytes)
 
-            if(!trade.body.brokerRef.contains("/LKW_")) {
-                throw AssertionError(trade.body.brokerRef)
+            val body = trade.body
+
+            val brokerRef = body.brokerRef
+
+            if(!brokerRef.contains("/LKW_")) {
+                throw AssertionError(brokerRef)
             }
 
             val row = sheet.createRow(idx)
@@ -150,24 +178,30 @@ private fun convertForStats(inputCsv: Path) {
                 cellStyle = dateStyle
             }
             row.createCell(1).setCellValue(map["class_code"])
-            row.createCell(2).setCellValue(map["trade_num"])
-            row.createCell(3).setCellValue(map["operation"])
-            row.createCell(4).setCellValue(map["client_code"])
-            row.createCell(5).setCellValue(map["order_num"])
-            row.createCell(6).setCellValue(trade.body.settleCurrency)
-            row.createCell(7).setCellValue(trade.body.value)
+            row.createCell(2).setCellValue(body.secCode)
+            row.createCell(3).setCellValue(map["trade_num"])
+            row.createCell(4).setCellValue(map["operation"])
+            row.createCell(5).setCellValue(map["client_code"])
+            row.createCell(6).setCellValue(map["order_num"])
+            row.createCell(7).setCellValue(body.settleCurrency)
+            row.createCell(8).setCellValue(body.value)
+            row.createCell(9).setCellValue(brokerRef)
         }
     }
 
-    for (i in 0..7) {
-        sheet.autoSizeColumn(i)
+    if (counter < 1_000) {
+        autosize()
     }
 
     val xlsxPath = inputCsv.resolveSibling(inputCsv.nameWithoutExtension + ".xlsx")
+
+    addStr.value = "saving..."
 
     workbook.use {
         FileOutputStream(xlsxPath.toFile()).use {
             workbook.write(it)
         }
     }
+
+    addStr.value = ""
 }
